@@ -5,11 +5,7 @@
 
 The goal of this project was to train and deploy a person detection model using the Visual Wake Words (VWW) dataset. The model is based on the MobileNetV1 architecture, which is commonly used for lightweight computer vision tasks. The main objective was to run this model efficiently on a Raspberry Pi using TensorFlow Lite, while maintaining an accuracy of at least 80%.
 
-The dataset used in this project contains small 96×96 RGB images labeled as either person or non_person. The training pipeline was used to train the model using deterministic dataset splits (`train.txt` for training and `val.txt` for validation). After training, the model was saved in Keras `.h5` format.
-
-Since Raspberry Pi can't run the Keras models directly, I converted the model into TensorFlow Lite (`.tflite`) format.
-
-To make the model more efficient for deployment, I applied a compression technique during the conversion process.
+Since Raspberry Pi can't run the Keras models directly, I converted the model into TensorFlow Lite (`.tflite`) format and to make the model more efficient for deployment, I applied a compression technique during the conversion process.
 
 
 ## Compression Strategy
@@ -18,9 +14,9 @@ To reduce the size of the model while keeping its performance high, post-trainin
 
 Quantization works by reducing the numerical precision of the model’s weights. Instead of storing weights using 32-bit floating point numbers (the standard format used during training), the TensorFlow Lite converter stores them using 16-bit floating point values. This reduced the amount of memory required to store the model. This was done by enabling optimization in the TensorFlow Lite converter:
 
-```python
+python
 converter.optimizations = [tf.lite.Optimize.DEFAULT]
-```
+converter.target_spec.supported_types = [tf.float16]
 
 Applying this optimization reduced the model size significantly. The original TensorFlow Lite model was about 0.826 MB, and after quantization the size decreased to about 0.437 MB, which is almost reduced in half.
 
@@ -47,20 +43,23 @@ Peak RSS memory: 359.88 MB
 Score: 0.9483
 
 
-## Reproduce
+## Reproducibility steps
 
-1. Train the model using the training script:
+1. Train the model on the cluster:
 
-```
 python src/train_vww.py
-```
+
 
 2. Convert the trained Keras model to TensorFlow Lite with quantization enabled.
 
 3. Evaluate the final model using the evaluation script:
 
-```
 python src/evaluate_vww.py --model trained_models/vww_96_quantized.tflite --split test_public --compute_score --export_json
-```
+
 
 The resulting `.tflite` model and generated `.json` metadata file were used for submission.
+
+
+4. Run Raspberry Pi Evaluation
+
+python src/scoreboard.py --model models/model.tflite --split test_public --compute_score
