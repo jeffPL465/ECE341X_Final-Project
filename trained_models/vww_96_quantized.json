@@ -1,0 +1,13 @@
+{
+    "model_name": "vww_96_quantized.tflite",
+    "split": "test_public",
+    "accuracy": 0.8479292099981756,
+    "size_mb": 0.43706512451171875,
+    "macs_m": 7.489664,
+    "latency_p50_ms": 1.9284188747406006,
+    "latency_p90_ms": 5.986715108156203,
+    "latency_p99_ms": 17.477146368473747,
+    "threads": 1,
+    "created_at": "Tue Mar  3 18:06:48 2026",
+    "score": 0.9482756999582069
+}
